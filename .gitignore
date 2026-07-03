@@ -1,0 +1,5 @@
+# Web Stnd
+.idea/
+.vscode/
+*.log
+Thumbs.db

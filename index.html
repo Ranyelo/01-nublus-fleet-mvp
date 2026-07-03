@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nublus · Gestión de Flota (Prototipo)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">N</span>
+      <div>
+        <h1>Transportes Nublus S.A.S.</h1>
+        <p>Plataforma SaaS — Gestión de flota (MVP prototipo)</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button id="btn-open-help" class="btn ghost">Ayuda</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <nav>
+        <button class="nav-btn active" data-view="vehiculos">🚚 Vehículos</button>
+        <button class="nav-btn" data-view="documentos">📄 Documentos</button>
+        <button class="nav-btn" data-view="mantenimientos">🛠️ Mantenimientos</button>
+        <button class="nav-btn" data-view="alertas">🔔 Alertas</button>
+        <button class="nav-btn" data-view="gastos">💳 Gastos</button>
+        <button class="nav-btn" data-view="reportes">📊 Reportes</button>
+      </nav>
+      <div class="tenant-box">
+        <h4>Tenant</h4>
+        <label>Empresa
+          <input id="tenantName" type="text" placeholder="Ej.: Flotas Andinas S.A." />
+        </label>
+        <button id="saveTenant" class="btn small">Guardar</button>
+      </div>
+    </aside>
+
+    <main class="content">
+      <!-- ======= Vehículos ======= -->
+      <section id="view-vehiculos" class="view visible">
+        <header class="view-header">
+          <h2>Vehículos</h2>
+          <div class="actions">
+            <button id="btn-add-vehiculo" class="btn">+ Nuevo vehículo</button>
+            <input id="searchVehiculo" class="search" placeholder="Buscar por placa, modelo…" />
+          </div>
+        </header>
+
+        <div class="cards" id="vehiculosList"></div>
+      </section>
+
+      <!-- ======= Documentos ======= -->
+      <section id="view-documentos" class="view">
+        <header class="view-header">
+          <h2>Documentos</h2>
+          <div class="actions">
+            <button id="btn-add-doc" class="btn">+ Cargar documento</button>
+            <select id="docFilter">
+              <option value="all">Todos</option>
+              <option value="vigente">Vigentes</option>
+              <option value="proximo">Próximos a vencer (≤30d)</option>
+              <option value="vencido">Vencidos</option>
+            </select>
+          </div>
+        </header>
+        <div class="table-wrap">
+          <table class="table" id="docsTable">
+            <thead>
+              <tr>
+                <th>Placa</th><th>Tipo</th><th>Número</th><th>Emisor</th>
+                <th>Emisión</th><th>Vencimiento</th><th>Estado</th><th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ======= Mantenimientos (mock) ======= -->
+      <section id="view-mantenimientos" class="view">
+        <header class="view-header">
+          <h2>Mantenimientos</h2>
+          <div class="actions">
+            <button id="btn-plan-mant" class="btn">+ Plan preventivo</button>
+          </div>
+        </header>
+        <div class="placeholder">
+          <p>Vista preliminar. Aquí se listarán planes por km/tiempo y las OT sugeridas.</p>
+          <ul>
+            <li>Plan: cada <strong>10.000 km</strong> o <strong>6 meses</strong></li>
+            <li>OT sugerida cuando el vehículo alcance el umbral</li>
+            <li>Recalcula próximo umbral al cerrar OT</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ======= Alertas ======= -->
+      <section id="view-alertas" class="view">
+        <header class="view-header">
+          <h2>Alertas</h2>
+          <div class="actions">
+            <select id="alertRange">
+              <option value="7">≤ 7 días</option>
+              <option value="15">≤ 15 días</option>
+              <option value="30" selected>≤ 30 días</option>
+              <option value="60">≤ 60 días</option>
+            </select>
+          </div>
+        </header>
+        <div id="alertasList" class="cards"></div>
+      </section>
+
+      <!-- ======= Gastos (mock) ======= -->
+      <section id="view-gastos" class="view">
+        <header class="view-header">
+          <h2>Gastos</h2>
+          <div class="actions">
+            <button id="btn-add-gasto" class="btn">+ Registrar gasto</button>
+          </div>
+        </header>
+        <div class="placeholder">
+          <p>Vista preliminar. Registra combustible, peajes, llantas, correctivos y exporta CSV.</p>
+        </div>
+      </section>
+
+      <!-- ======= Reportes ======= -->
+      <section id="view-reportes" class="view">
+        <header class="view-header">
+          <h2>Reportes</h2>
+          <div class="actions">
+            <button id="btn-export" class="btn ghost">Exportar CSV</button>
+          </div>
+        </header>
+        <div class="kpis">
+          <div class="kpi"><span id="kpiVehiculos">0</span><label>Vehículos</label></div>
+          <div class="kpi"><span id="kpiDocsVig">0</span><label>Docs vigentes</label></div>
+          <div class="kpi"><span id="kpiDocsVenc">0</span><label>Docs vencidos</label></div>
+          <div class="kpi"><span id="kpiDocs30">0</span><label>Vencen ≤30 días</label></div>
+        </div>
+        <div class="placeholder">
+          <p>KPIs básicos ligados al MVP de Nublus. El detalle proviene de listas y reglas de negocio del prototipo.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ======= Modales ======= -->
+  <dialog id="modalVehiculo" class="modal">
+    <form id="formVehiculo" method="dialog">
+      <h3>Nuevo vehículo</h3>
+      <div class="grid">
+        <label>Placa* <input name="placa" required maxlength="10" /></label>
+        <label>Clase <input name="clase" /></label>
+        <label>Marca <input name="marca" /></label>
+        <label>Modelo <input name="modelo" /></label>
+        <label>VIN <input name="vin" /></label>
+        <label>Capacidad <input name="capacidad" type="number" min="0" /></label>
+        <label>Línea
+          <select name="linea">
+            <option value="Pasajeros">Pasajeros</option>
+            <option value="Carga">Carga</option>
+          </select>
+        </label>
+        <label>Sede <input name="sede" /></label>
+        <label>Estado
+          <select name="estado">
+            <option value="Activo" selected>Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+        </label>
+      </div>
+      <menu>
+        <button value="cancel" class="btn ghost">Cancelar</button>
+        <button type="submit" class="btn">Guardar</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="modalDoc" class="modal">
+    <form id="formDoc" method="dialog">
+      <h3>Cargar documento</h3>
+      <div class="grid">
+        <label>Placa* <input name="placa" required /></label>
+        <label>Tipo*
+          <select name="tipo" required>
+            <option value="SOAT">SOAT</option>
+            <option value="RTM">RTM/EC</option>
+            <option value="POLIZA">Póliza</option>
+            <option value="TO">Tarjeta Operación</option>
+            <option value="LICENCIA">Licencia</option>
+          </select>
+        </label>
+        <label>Número* <input name="numero" required /></label>
+        <label>Emisor <input name="emisor" /></label>
+        <label>Emisión* <input name="emision" type="date" required /></label>
+        <label>Vencimiento* <input name="vencimiento" type="date" required /></label>
+        <label>Archivo (simulado)
+          <input name="archivo" type="text" placeholder="ej.: soat_ABC123.pdf" />
+        </label>
+      </div>
+      <menu>
+        <button value="cancel" class="btn ghost">Cancelar</button>
+        <button type="submit" class="btn">Guardar</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="modalGasto" class="modal">
+    <form id="formGasto" method="dialog">
+      <h3>Registrar gasto (mock)</h3>
+      <div class="grid">
+        <label>Placa* <input name="placa" required /></label>
+        <label>Tipo*
+          <select name="tipo" required>
+            <option>Combustible</option>
+            <option>Peaje</option>
+            <option>Llantas</option>
+            <option>Correctivo</option>
+            <option>Otro</option>
+          </select>
+        </label>
+        <label>Monto* <input name="monto" type="number" min="0" step="0.01" required /></label>
+        <label>Fecha* <input name="fecha" type="date" required /></label>
+        <label>Proveedor <input name="proveedor" /></label>
+      </div>
+      <menu>
+        <button value="cancel" class="btn ghost">Cancelar</button>
+        <button type="submit" class="btn">Guardar</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="modalHelp" class="modal">
+    <article>
+      <h3>Guía rápida — Prototipo Nublus</h3>
+      <ol>
+        <li>En <strong>Vehículos</strong>, pulsa “Nuevo vehículo”.</li>
+        <li>En <strong>Documentos</strong>, carga SOAT/RTM con fechas; el estado se calcula.</li>
+        <li>Revisa <strong>Alertas</strong> (≤30 días) y el panel de <strong>Reportes</strong>.</li>
+      </ol>
+      <menu>
+        <button id="closeHelp" class="btn">Entendido</button>
+      </menu>
+    </article>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
